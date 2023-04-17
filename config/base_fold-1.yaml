@@ -1,8 +1,8 @@
 project_name: "base"
 fold_num: 1
-epochs: 1
+epochs: 30
 learning_rate: 0.00001
-device: "cpu"
+device: "cuda"
 
 # For ablation study
 is_sampling: False
