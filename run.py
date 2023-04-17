@@ -1,5 +1,6 @@
 import yaml
 import torch
+import argparse
 
 from model.model_training import ModelTraining
 from training_strategy.query_false_positive import QueryFalsePositives
@@ -31,7 +32,12 @@ def check_device(config):
     return config
 
 if __name__ == "__main__":
-    config_fname = "./config/pos-only_50%_fold-1.yaml"
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-i", "--input", help="Input config file path")
+    args = parser.parse_args()
+    
+    config_fname = args.input
+    # config_fname = "./config/pos-only_50%_fold-1.yaml"
     config = load_config(config_fname)
     config = check_device(config)
     
