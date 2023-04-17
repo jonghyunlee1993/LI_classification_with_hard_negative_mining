@@ -1,3 +1,6 @@
+import os
+os.environ["CUDA_VISIBLE_DEVICES"]= "1"
+
 import yaml
 import torch
 import argparse
@@ -23,7 +26,7 @@ def get_project_name(config):
 
 def check_device(config):
     if torch.cuda.is_available():
-        config['device'] = "cuda:0"
+        config['device'] = "cuda"
     elif torch.backends.mps.is_available():
         config['device'] = "mps"
     else:
@@ -43,6 +46,9 @@ if __name__ == "__main__":
     
     PROJECT_NAME = get_project_name(config)
     
+    if not os.path.exists("./results"):
+        os.makedirs("./results")
+
     # Step 1: weak model training
     weak_model_training = ModelTraining(config, PROJECT_NAME, is_weak=True)
     weak_model_training.run()

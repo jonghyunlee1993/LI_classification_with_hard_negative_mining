@@ -1,4 +1,4 @@
-project_name: "pos-only_50%"
+project_name: "entire-subset_50%"
 fold_num: 1
 epochs: 30
 learning_rate: 0.00001
@@ -8,4 +8,4 @@ device: "cuda"
 is_sampling: True
 sampling_rate: 0.5
 sampling_random_state: 42
-sample_only_pos: True
+sample_only_pos: False

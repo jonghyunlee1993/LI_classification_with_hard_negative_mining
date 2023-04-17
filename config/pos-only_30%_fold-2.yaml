@@ -1,11 +1,11 @@
-project_name: "pos-only_50%"
-fold_num: 1
+project_name: "pos-only_30%"
+fold_num: 2
 epochs: 30
 learning_rate: 0.00001
 device: "cuda"
 
 # For ablation study
 is_sampling: True
-sampling_rate: 0.5
-sampling_random_state: 42
+sampling_rate: 0.3
+sampling_random_state: 43
 sample_only_pos: True
