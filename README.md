@@ -13,6 +13,7 @@ To utilize this repository, simply add the desired configuration file to the "co
 2. Run a script `python run.py -i my_config.yaml`
 
 ## Dataset hierarchy
+```
 project/
 ├─ config/
 ├─ data/
@@ -25,4 +26,4 @@ project/
 ├─ training_strategy/
 ├─ model/
 ├─ run.py
-
+```
