@@ -1,4 +1,3 @@
-
 import os
 import cv2
 import glob
@@ -27,15 +26,16 @@ class ListPatchDataset(PatchDataset):
 
 class HardNegativeMining:
     def __init__(self, project_name, model, 
-                 valid_transform, config, 
-                 number_of_query=20):
+                 valid_transform, config):
+        
         self.project_name = project_name
         self.device = config['device']
         self.model = model.to(self.device)
         self.model.eval()
         
         self.valid_transform = valid_transform
-        self.number_of_query = number_of_query
+        self.query_criterion = config['query_method']
+        self.number_of_query = config['num_query']
         
         ref_path = f"./results/false-positive_{self.project_name}/*.png"
         self.ref_flist = glob.glob(ref_path)
@@ -85,7 +85,13 @@ class HardNegativeMining:
                                 x = batch[1]
                                 
                             cand_feat = self.model.forward_features(x).reshape(sample_batch_size, -1).detach().cpu()
-                            dist = nn.PairwiseDistance(p=2)(ref_feat, cand_feat).detach().cpu().numpy().tolist()
+                            if self.query_criterion == "L2":
+                                dist = nn.PairwiseDistance(p=2)(ref_feat, cand_feat).detach().cpu().numpy().tolist()
+                            elif self.query_criterion == "Cos":
+                                dist = nn.CosineSimilarity()(ref_feat, cand_feat).detach().cpu().numpy().tolist()
+                            else:
+                                raise("Not implemented.")
+                            
                             result["fname"].extend([b for b in batch[0]])
                             result["dist"].extend(dist)
                         except Exception as e:

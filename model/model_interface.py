@@ -37,20 +37,6 @@ class ModelInterface(pl.LightningModule):
         sensitivity_ = TMF.recall(preds, targets, task="multiclass", num_classes=2)
         specificity_ = TMF.specificity(preds, targets, task="multiclass", num_classes=2)
         f1_score_ = TMF.f1_score(preds, targets, task="multiclass", num_classes=2)
-        # try:
-        #     auroc_ = TMF.auroc(preds, targets, task="multiclass", num_classes=2)
-        #     auprc_ = TMF.average_precision(preds, targets, task="multiclass", num_classes=2)
-
-        #     sensitivity_ = TMF.recall(preds, targets, task="multiclass", num_classes=2)
-        #     specificity_ = TMF.specificity(preds, targets, task="multiclass", num_classes=2)
-        #     f1_score_ = TMF.f1_score(preds, targets, task="multiclass", num_classes=2)
-        # except:
-        #     auroc_ = TMF.auroc(preds, targets, num_classes=2)
-        #     auprc_ = TMF.average_precision(preds, targets, num_classes=2)
-
-        #     sensitivity_ = TMF.recall(preds, targets, num_classes=2)
-        #     specificity_ = TMF.specificity(preds, targets, num_classes=2)
-        #     f1_score_ = TMF.f1_score(preds, targets, num_classes=2)
 
         return auroc_, auprc_, sensitivity_, specificity_, f1_score_
     
@@ -93,11 +79,8 @@ class ModelInterface(pl.LightningModule):
         
         logging_objects = self.compute_metrics(preds, targets)
         self.logging(logging_objects, mode="test")
-        
-        try:
-            conf_mat = TMF.confusion_matrix(preds, targets, task="multiclass", num_classes=2)
-        except:
-            conf_mat = TMF.confusion_matrix(preds, targets, num_classes=2)
+
+        conf_mat = TMF.confusion_matrix(preds, targets, task="multiclass", num_classes=2)
         print(conf_mat.detach().cpu().numpy())    
         
         self.validation_step_outputs.clear()
@@ -119,8 +102,3 @@ class ModelInterface(pl.LightningModule):
 def define_callback(PROJECT_NAME):
     return [ModelCheckpoint(monitor='valid_loss', mode="min", save_top_k=1, dirpath=f'weights/{PROJECT_NAME}', 
                             filename='{epoch:03d}-{valid_loss:.4f}-{valid_auroc:.4f}-{valid_auprc:.4f}')]
-            
-
-# predictor = ModelInterface(model)
-# trainer = pl.Trainer(max_epochs=30, gpus=1, enable_progress_bar=True, 
-#                      callbacks=callbacks, precision=16)

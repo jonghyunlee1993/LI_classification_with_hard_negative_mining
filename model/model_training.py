@@ -62,12 +62,8 @@ class ModelTraining:
     def train_and_eval(self):
         self.trainer.fit(self.model_interface, 
                          self.train_dataloader, self.valid_dataloader)
-        
-        self.model_interface.load_from_checkpoint(glob.glob(f"./weights/{self.weight_path}/*.ckpt")[0],
-                                                  model=self.model, 
-                                                  learning_rate=self.config['learning_rate'], 
-                                                  len_train_dataloader=self.len_train_dataloader)
-        test_results = self.trainer.test(self.model_interface, self.test_dataloader)
+
+        test_results = self.trainer.test(self.model_interface, self.test_dataloader, ckpt_path="best")
         
         if self.is_weak:
             results_fname = "results/weak_model_results.csv"

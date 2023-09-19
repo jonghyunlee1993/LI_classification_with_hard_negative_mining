@@ -1,6 +1,4 @@
 import os
-os.environ["CUDA_VISIBLE_DEVICES"]= "1"
-
 import yaml
 import torch
 import argparse
@@ -24,9 +22,10 @@ def get_project_name(config):
     
     return PROJECT_NAME
 
-def check_device(config):
+def check_device(config, args):
     if torch.cuda.is_available():
         config['device'] = "cuda"
+        os.environ["CUDA_VISIBLE_DEVICES"]=str(args.gpu_no)
     elif torch.backends.mps.is_available():
         config['device'] = "mps"
     else:
@@ -37,12 +36,12 @@ def check_device(config):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-i", "--input", help="Input config file path")
+    parser.add_argument("--gpu_no", default=0, type=int, help="Specify the number of gpu to utilize. Default: 0")
     args = parser.parse_args()
     
     config_fname = args.input
-    # config_fname = "./config/pos-only_50%_fold-1.yaml"
     config = load_config(config_fname)
-    config = check_device(config)
+    config = check_device(config, args)
     
     PROJECT_NAME = get_project_name(config)
     
@@ -67,8 +66,7 @@ if __name__ == "__main__":
         project_name=PROJECT_NAME,
         model=weak_model_training.model,
         valid_transform=weak_model_training.valid_transform,
-        config=config, 
-        number_of_query=20
+        config=config
     ).run()
     
     # Step 4: strong model training

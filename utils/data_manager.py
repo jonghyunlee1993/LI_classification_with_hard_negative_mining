@@ -59,10 +59,10 @@ class DataManager:
 
         self.df = df
 
-    def split_train_valid_test(self, random_state=42):
+    def split_train_valid_test(self):
         unique_ids = self.df.s_id.unique()
-        train_id, test_id = train_test_split(unique_ids, test_size=self.test_ratio, random_state=random_state)
-        train_id, valid_id = train_test_split(train_id, test_size=self.valid_ratio, random_state=random_state)
+        train_id, test_id = train_test_split(unique_ids, test_size=self.test_ratio, random_state=self.sampling_random_state)
+        train_id, valid_id = train_test_split(train_id, test_size=self.valid_ratio, random_state=self.sampling_random_state)
         
         self.train_df = self.df[self.df.s_id.isin(train_id)].reset_index(drop=True)
         self.valid_df = self.df[self.df.s_id.isin(valid_id)].reset_index(drop=True)
@@ -77,7 +77,8 @@ class DataManager:
             self.train_df = pd.concat([pos_df_sampled, neg_df], axis=0).reset_index(drop=True)
         else:
             _, self.train_df = train_test_split(self.train_df, test_size=self.sampling_rate, random_state=self.sampling_random_state).reset_index(drop=True)
-        
+            self.train_df = self.train_df.reset_index(drop=True)
+            
     def log_dataset(self):
         print("Dataset configurations ... ")
         print(f"# of patches\t train: {len(self.train_df)} valid: {len(self.valid_df)} test: {len(self.test_df)}")
