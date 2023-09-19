@@ -1,0 +1,15 @@
+project_name: "query_5_ablation"
+fold_num: 1
+epochs: 30
+learning_rate: 0.0001
+device: "cuda"
+
+# For ablation study
+is_sampling: False
+sampling_rate: 0.5
+sampling_random_state: 42
+sample_only_pos: False
+
+# Query criterion
+query_method: "L2"
+num_query: 5
