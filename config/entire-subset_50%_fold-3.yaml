@@ -1,7 +1,7 @@
 project_name: "entire-subset_50%"
 fold_num: 3
 epochs: 30
-learning_rate: 0.00001
+learning_rate: 0.0001
 device: "cuda"
 
 # For ablation study
@@ -9,3 +9,7 @@ is_sampling: True
 sampling_rate: 0.5
 sampling_random_state: 44
 sample_only_pos: False
+
+# Query criterion
+query_method: "L2"
+num_query: 20

@@ -1,15 +1,15 @@
-project_name: "entire-subset_70%"
-fold_num: 1
+project_name: "query_100_ablation"
+fold_num: 2
 epochs: 30
 learning_rate: 0.0001
 device: "cuda"
 
 # For ablation study
-is_sampling: True
-sampling_rate: 0.7
-sampling_random_state: 42
+is_sampling: False
+sampling_rate: 0.5
+sampling_random_state: 43
 sample_only_pos: False
 
 # Query criterion
 query_method: "L2"
-num_query: 20
+num_query: 100
