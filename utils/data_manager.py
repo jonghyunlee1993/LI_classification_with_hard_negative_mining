@@ -67,11 +67,13 @@ class DataManager:
 
     def split_train_valid_test(self):
         unique_ids = self.df.s_id.unique()
+        
         train_id, test_id = train_test_split(
             unique_ids,
             test_size=self.test_ratio,
             random_state=self.sampling_random_state,
         )
+        
         train_id, valid_id = train_test_split(
             train_id,
             test_size=self.valid_ratio,
@@ -91,6 +93,7 @@ class DataManager:
                 int(len(pos_df) * self.sampling_rate),
                 random_state=self.sampling_random_state,
             ).reset_index(drop=True)
+            
             self.train_df = pd.concat([pos_df_sampled, neg_df], axis=0).reset_index(
                 drop=True
             )
@@ -99,7 +102,8 @@ class DataManager:
                 self.train_df,
                 test_size=self.sampling_rate,
                 random_state=self.sampling_random_state,
-            ).reset_index(drop=True)
+            )
+            
             self.train_df = self.train_df.reset_index(drop=True)
 
     def log_dataset(self):
@@ -113,6 +117,6 @@ class DataManager:
         print()
 
 
-if __name__ == "__main__":
-    weak_data_manager = DataManager()
-    weak_data_manager.run()
+# if __name__ == "__main__":
+#     weak_data_manager = DataManager()
+#     weak_data_manager.run()

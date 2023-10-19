@@ -12,4 +12,4 @@ sample_only_pos: False
 
 # Query criterion
 query_method: "L2"
-num_query: 50
+num_query: 100

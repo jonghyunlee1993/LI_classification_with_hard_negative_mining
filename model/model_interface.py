@@ -34,33 +34,70 @@ class ModelInterface(pl.LightningModule):
     def compute_metrics(self, preds, targets):
         auroc_ = TMF.auroc(preds, targets, task="multiclass", num_classes=2)
         auprc_ = TMF.average_precision(preds, targets, task="multiclass", num_classes=2)
-
-        sensitivity_ = TMF.recall(preds, targets, task="multiclass", num_classes=2)
-        specificity_ = TMF.specificity(preds, targets, task="multiclass", num_classes=2)
+        
+        conf_mat = TMF.confusion_matrix(
+            preds, targets, task="multiclass", num_classes=2
+        ).detach().cpu().numpy().ravel()
+        
+        tn, fp, fn, tp = conf_mat
+        
+        sensitivity_ = round(tp / (tp + fn), 4)
+        specificity_ = round(tn / (tn + fp), 4)
         f1_score_ = TMF.f1_score(preds, targets, task="multiclass", num_classes=2)
-
-        return auroc_, auprc_, sensitivity_, specificity_, f1_score_
+        
+        return auroc_, auprc_, sensitivity_, specificity_, f1_score_, conf_mat
 
     def logging(self, logging_objects, mode="valid"):
-        auroc_, auprc_, sensitivity_, specificity_, f1_score_ = logging_objects
+        auroc_, auprc_, sensitivity_, specificity_, f1_score_, conf_mat = logging_objects
 
         self.log(f"{mode}_auroc", auroc_, on_step=False, on_epoch=True, prog_bar=True)
         self.log(f"{mode}_auprc", auprc_, on_step=False, on_epoch=True, prog_bar=True)
-        self.log(f"{mode}_f1", f1_score_, on_step=False, on_epoch=True, prog_bar=True)
-        self.log(
-            f"{mode}_sensitivity",
-            sensitivity_,
-            on_step=False,
-            on_epoch=True,
-            prog_bar=True,
-        )
-        self.log(
-            f"{mode}_specificity",
-            specificity_,
-            on_step=False,
-            on_epoch=True,
-            prog_bar=True,
-        )
+        
+        if mode == "test":
+            self.log(f"{mode}_f1", f1_score_, on_step=False, on_epoch=True, prog_bar=True)
+            self.log(
+                f"{mode}_sensitivity",
+                sensitivity_,
+                on_step=False,
+                on_epoch=True,
+                prog_bar=True,
+            )
+            self.log(
+                f"{mode}_specificity",
+                specificity_,
+                on_step=False,
+                on_epoch=True,
+                prog_bar=True,
+            )
+            for key, value in enumerate(conf_mat):
+                if key == 0:
+                    self.log(f"{mode}_tn", 
+                            value, 
+                            on_step=False, 
+                            on_epoch=True, 
+                            prog_bar=False
+                    )
+                elif key == 1:
+                    self.log(f"{mode}_fp", 
+                            value, 
+                            on_step=False, 
+                            on_epoch=True, 
+                            prog_bar=False
+                    )
+                elif key == 2:
+                    self.log(f"{mode}_fn", 
+                                value, 
+                                on_step=False, 
+                                on_epoch=True, 
+                                prog_bar=False
+                    )
+                elif key == 3:
+                        self.log(f"{mode}_tp", 
+                                value, 
+                                on_step=False, 
+                                on_epoch=True, 
+                                prog_bar=False
+                    )
 
     def validation_step(self, batch, batch_idx):
         preds, y, loss = self.step(batch)
@@ -92,11 +129,6 @@ class ModelInterface(pl.LightningModule):
 
         logging_objects = self.compute_metrics(preds, targets)
         self.logging(logging_objects, mode="test")
-
-        conf_mat = TMF.confusion_matrix(
-            preds, targets, task="multiclass", num_classes=2
-        )
-        print(conf_mat.detach().cpu().numpy())
 
         self.validation_step_outputs.clear()
         self.validation_step_targets.clear()

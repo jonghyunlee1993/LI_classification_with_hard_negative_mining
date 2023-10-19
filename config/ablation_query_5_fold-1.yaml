@@ -1,4 +1,4 @@
-project_name: "query_10_ablation"
+project_name: "query_5_ablation"
 fold_num: 1
 epochs: 30
 learning_rate: 0.0001
