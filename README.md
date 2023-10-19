@@ -27,3 +27,6 @@ project/
 ├─ model/
 ├─ run.py
 ```
+
+## Data availability
+You can freely access dataset with following link: https://zenodo.org/records/10020633
